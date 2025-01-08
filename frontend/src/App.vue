@@ -4,34 +4,120 @@
     <div id="menu">
       <aside>
         <ul class="menu-list">
-          <li>
-            <a>All notes</a>
+          <li class="flex justify-between" @click="filterNotes = 'All notes'">
+            <div class="flex gap-4">
+              <ScrollText width="16" height="16" />
+              <a>All notes</a>
+            </div>
+            <span class="menu-item-count">{{ notes.length }}</span>
           </li>
-          <li>
-            <a>Pinned notes</a>
-          </li>
-          <li>
-            <a>Notebooks</a>
-          </li>
+          <details>
+            <summary>
+              <Notebook width="16" height="16" />
+              <span>Notebooks</span>
+            </summary>
+            <ul>
+              <li class="flex justify-between pl-8">
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Ideas</a>
+                </div>
+                <span class="menu-item-count">0</span>
+              </li>
+              <li class="flex justify-between pl-8">
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Hobby</a>
+                </div>
+                <span class="menu-item-count">0</span>
+              </li>
+              <li class="flex justify-between pl-8">
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Learn</a>
+                </div>
+                <span class="menu-item-count">0</span>
+              </li>
+              <li class="flex justify-between pl-8">
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Tips</a>
+                </div>
+                <span class="menu-item-count">0</span>
+              </li>
+              <li class="flex justify-between pl-8">
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Website</a>
+                </div>
+                <span class="menu-item-count">0</span>
+              </li>
+            </ul>
+          </details>
+          <details>
+            <summary>
+              <FileCheck width="16" height="16" />
+              <span>Status</span>
+            </summary>
+            <ul>
+              <li
+                class="flex justify-between pl-8"
+                @click="filterNotes = 'Draft'"
+              >
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Draft</a>
+                </div>
+                <span class="menu-item-count">{{
+                  filteredNotesCount("Draft")
+                }}</span>
+              </li>
+              <li class="flex justify-between pl-8">
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Active</a>
+                </div>
+                <span class="menu-item-count">0</span>
+              </li>
+              <li class="flex justify-between pl-8">
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Completed</a>
+                </div>
+                <span class="menu-item-count">0</span>
+              </li>
+              <li class="flex justify-between pl-8">
+                <div class="flex gap-4">
+                  <SquarePen width="16" height="16" />
+                  <a>Archived</a>
+                </div>
+                <span class="menu-item-count">0</span>
+              </li>
+            </ul>
+          </details>
+          <details>
+            <summary>
+              <Tags width="16" height="16" />
+              <span>Tags</span>
+            </summary>
+            <ul>
+              <li class="flex gap-4 pl-8">
+                <Tag width="16" height="16" />
+                <a>Code</a>
+              </li>
+              <li class="flex gap-4 pl-8">
+                <Tag width="16" height="16" />
+                <a>Tutorial</a>
+              </li>
+            </ul>
+          </details>
 
-          <ul class="sub-menu-list">
-            <li><a>Ideas</a></li>
-            <li><a>Hobby</a></li>
-            <li><a>Learn</a></li>
-            <li><a>Tips</a></li>
-            <li><a>Website</a></li>
-          </ul>
-          <li>
-            <a>Status</a>
-          </li>
-          <ul class="sub-menu-list">
-            <li><a>Draft</a></li>
-            <li><a>Active</a></li>
-            <li><a>Completed</a></li>
-            <li><a>Archived</a></li>
-          </ul>
-          <li>
-            <a>Trash</a>
+          <li class="flex justify-between">
+            <div class="flex gap-4">
+              <Trash2 width="16" height="16" />
+              <a>Trash</a>
+            </div>
+            <span class="menu-item-count">0</span>
           </li>
         </ul>
       </aside>
@@ -55,7 +141,9 @@
     <div id="notes-container">
       <div id="notes-header">
         <div id="notes-title">
-          <p>All notes</p>
+          <p class="notes-title">
+            {{ filterNotes }}
+          </p>
           <button @click="newNote">New note</button>
         </div>
         <input id="search-notes" type="text" placeholder="Search notes..." />
@@ -65,10 +153,10 @@
         <div
           @click="selectNote(note)"
           class="note"
-          v-for="note in notes"
-          :key="note"
+          v-for="note in filteredNotes"
+          :key="note.id"
         >
-          <h2>{{ note.name }}</h2>
+          <h2 class="note-title">{{ note.name }}</h2>
           <span class="tag">{{ note.tag }}</span>
           <p class="note-description">
             {{ note.description }}
@@ -77,7 +165,8 @@
       </div>
     </div>
     <!-- textedit -->
-    <div id="textedit-container" v-if="noteIsSelected">
+    <div v-if="noteIsSelected === false">No note</div>
+    <div id="textedit-container" v-else>
       <div id="textedit-header">
         <input
           id="textedit-notename"
@@ -108,8 +197,10 @@
           <option value="">Archived</option>
           <option value="">All notes</option>
         </select>
-        <span :class="selectedNote.tag ? 'tag' : ''">{{ selectedNote.tag }}</span>
-        <input id="textedit-addtags" type="text" placeholder="Add Tags">
+        <span :class="selectedNote.tag ? 'tag' : ''">{{
+          selectedNote.tag
+        }}</span>
+        <input id="textedit-addtags" type="text" placeholder="Add Tags" />
       </div>
       <div
         id="textedit-preview"
@@ -127,34 +218,66 @@
 </template>
 
 <script>
+import {
+  Trash2,
+  Notebook,
+  ScrollText,
+  FileCheck,
+  Tags,
+  Tag,
+  SquarePen,
+} from "lucide-vue-next";
 import { marked } from "marked";
 export default {
   name: "App",
+  components: {
+    Trash2,
+    Notebook,
+    ScrollText,
+    FileCheck,
+    Tags,
+    Tag,
+    SquarePen,
+  },
   data() {
     return {
       isPreviewMode: false,
+      filterNotes: "All notes",
       notes: [],
       selectedNote: {},
-      noteIsSelected:false,
+      noteIsSelected: false,
     };
   },
   methods: {
     getMarkdownHtml() {
       return marked(this.selectedNote.description, { sanitize: true });
     },
-    selectNote(note){
+    selectNote(note) {
       this.selectedNote = note;
       this.noteIsSelected = true;
     },
     newNote() {
+
       let note = {
         name: "New note",
-        tag: "new",
+        tag: this.filterNotes,
         description: "",
+        filter: this.filterNotes,
       };
       this.notes.push(note);
     },
-
+    filteredNotesCount(filter) {
+      return this.notes.filter((note) => note.filter === filter).length;
+    },
+  },
+  computed: {
+    filteredNotes() {
+      if (this.filterNotes === "All notes") {
+        return this.notes;
+      }
+      return this.notes.filter((note) => note.filter === this.filterNotes);
+      // .filter(note => this.filter === 'pinned' ? note.pinned : note.deleted);
+    },
   },
 };
 </script>
