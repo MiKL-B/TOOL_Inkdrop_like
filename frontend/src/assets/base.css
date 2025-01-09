@@ -80,6 +80,12 @@ summary:hover {
 .pl-8 {
   padding-left: 2rem !important;
 }
+.center{
+  align-items: center;
+}
+.w-full{
+  width:100%
+}
 .menu-item-count {
   color: var(--grey);
 }
@@ -158,6 +164,15 @@ button.danger {
   padding: 0.2rem 0.3rem;
   font-size: 0.8rem;
 }
+#input-tag{
+  border:none;
+  background:none;
+  color:#F2F2F2;
+  max-width: 100px;
+}
+#input-tag:focus{
+  outline:none;
+}
 h2 {
   font-weight: bold;
   padding-bottom: 0.4rem;
@@ -209,6 +224,14 @@ p {
 #textedit:focus {
   outline: none;
 }
+#textedit-nonote{
+  background: #f7f7f7;
+  display:flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
 h1 {
   font-size: 24px;
   font-weight: bold;
@@ -247,4 +270,7 @@ summary::after {
 
 details[open] summary::after {
   content: "▲";
+}
+.text-grey{
+  color:var(--grey)
 }

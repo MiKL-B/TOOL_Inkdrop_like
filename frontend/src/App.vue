@@ -11,6 +11,7 @@
             </div>
             <span class="menu-item-count">{{ notes.length }}</span>
           </li>
+          <!-- notebooks -->
           <details>
             <summary>
               <Notebook width="16" height="16" />
@@ -54,6 +55,7 @@
               </li>
             </ul>
           </details>
+          <!-- status -->
           <details>
             <summary>
               <FileCheck width="16" height="16" />
@@ -72,42 +74,68 @@
                   filteredNotesCount("Draft")
                 }}</span>
               </li>
-              <li class="flex justify-between pl-8">
+              <li
+                class="flex justify-between pl-8"
+                @click="filterNotes = 'Active'"
+              >
                 <div class="flex gap-4">
                   <SquarePen width="16" height="16" />
                   <a>Active</a>
                 </div>
-                <span class="menu-item-count">0</span>
+                <span class="menu-item-count">
+                  {{ filteredNotesCount("Active") }}
+                </span>
               </li>
-              <li class="flex justify-between pl-8">
+              <li
+                class="flex justify-between pl-8"
+                @click="filterNotes = 'Completed'"
+              >
                 <div class="flex gap-4">
                   <SquarePen width="16" height="16" />
                   <a>Completed</a>
                 </div>
-                <span class="menu-item-count">0</span>
+                <span class="menu-item-count">{{
+                  filteredNotesCount("Completed")
+                }}</span>
               </li>
-              <li class="flex justify-between pl-8">
+              <li
+                class="flex justify-between pl-8"
+                @click="filterNotes = 'Archived'"
+              >
                 <div class="flex gap-4">
                   <SquarePen width="16" height="16" />
                   <a>Archived</a>
                 </div>
-                <span class="menu-item-count">0</span>
+                <span class="menu-item-count">{{
+                  filteredNotesCount("Archived")
+                }}</span>
               </li>
             </ul>
           </details>
+          <!-- tags -->
+          <li class="flex gap-4" @click="newTag">
+            <CirclePlus width="16" height="16" />
+            <span>New Tag</span>
+          </li>
           <details>
             <summary>
               <Tags width="16" height="16" />
               <span>Tags</span>
             </summary>
             <ul>
-              <li class="flex gap-4 pl-8">
-                <Tag width="16" height="16" />
-                <a>Code</a>
-              </li>
-              <li class="flex gap-4 pl-8">
-                <Tag width="16" height="16" />
-                <a>Tutorial</a>
+              <li
+                class="flex justify-between pl-8"
+                v-for="tag in tags"
+                :key="tag.id"
+                @click="filterNotes = tag.name"
+              >
+                <div class="flex gap-4">
+                  <Tag width="16" height="16" />
+                  <input id="input-tag" type="text" v-model="tag.name" />
+                </div>
+                <span class="menu-item-count">{{
+                  filteredNotesCountTag(tag.name)
+                }}</span>
               </li>
             </ul>
           </details>
@@ -157,7 +185,8 @@
           :key="note.id"
         >
           <h2 class="note-title">{{ note.name }}</h2>
-          <span class="tag">{{ note.tag }}</span>
+          <span class="tag" v-if="note.tag !== ''">{{ note.tag }}</span>
+          <span>{{ note.filter }}</span>
           <p class="note-description">
             {{ note.description }}
           </p>
@@ -165,7 +194,10 @@
       </div>
     </div>
     <!-- textedit -->
-    <div v-if="noteIsSelected === false">No note</div>
+    <div id="textedit-nonote" v-if="noteIsSelected === false">
+      <CircleAlert width="72" height="72" class="text-grey" />
+      <p>No note here !</p>
+    </div>
     <div id="textedit-container" v-else>
       <div id="textedit-header">
         <input
@@ -180,7 +212,7 @@
         </button>
       </div>
       <div id="textedit-filters">
-        <select name="" id="">
+        <!-- <select name="" id="">
           <option value="">All notes</option>
           <option value="">Pinned notes</option>
           <option value="">Ideas</option>
@@ -189,18 +221,24 @@
           <option value="">Tips</option>
           <option value="">Website</option>
           <option value="">Trash</option>
+        </select> -->
+        <select name="" id="" v-model="selectedNote.filter">
+          <option value="All notes">No status</option>
+          <option value="Draft">Draft</option>
+          <option value="Active">Active</option>
+          <option value="Completed">Completed</option>
+          <option value="Archived">Archived</option>
         </select>
-        <select name="" id="">
-          <option value="">Draft</option>
-          <option value="">Active</option>
-          <option value="">Completed</option>
-          <option value="">Archived</option>
-          <option value="">All notes</option>
-        </select>
-        <span :class="selectedNote.tag ? 'tag' : ''">{{
+        <!-- <span :class="selectedNote.tag ? 'tag' : ''">{{
           selectedNote.tag
         }}</span>
-        <input id="textedit-addtags" type="text" placeholder="Add Tags" />
+
+        <input id="textedit-addtags" type="text" placeholder="Add Tags" /> -->
+        <select name="" id="" v-model="selectedNote.tag">
+          <option v-for="tag in tags" :key="tag.id" :value="tag.name">
+            {{ tag.name }}
+          </option>
+        </select>
       </div>
       <div
         id="textedit-preview"
@@ -226,6 +264,8 @@ import {
   Tags,
   Tag,
   SquarePen,
+  CircleAlert,
+  CirclePlus,
 } from "lucide-vue-next";
 import { marked } from "marked";
 export default {
@@ -238,6 +278,8 @@ export default {
     Tags,
     Tag,
     SquarePen,
+    CircleAlert,
+    CirclePlus,
   },
   data() {
     return {
@@ -245,7 +287,10 @@ export default {
       filterNotes: "All notes",
       notes: [],
       selectedNote: {},
+      status: "",
       noteIsSelected: false,
+      tags: [],
+      tagName: "",
     };
   },
   methods: {
@@ -257,17 +302,25 @@ export default {
       this.noteIsSelected = true;
     },
     newNote() {
-
       let note = {
         name: "New note",
-        tag: this.filterNotes,
+        tag: "",
         description: "",
         filter: this.filterNotes,
       };
       this.notes.push(note);
     },
     filteredNotesCount(filter) {
-      return this.notes.filter((note) => note.filter === filter).length;
+      return this.notes.filter(note => note.filter === filter).length;
+    },
+    filteredNotesCountTag(filter) {
+      return this.notes.filter(note => note.tag === filter).length;
+    },
+    newTag() {
+      let tag = {
+        name: this.tagName || "New tag",
+      };
+      this.tags.push(tag);
     },
   },
   computed: {
@@ -276,7 +329,7 @@ export default {
         return this.notes;
       }
       return this.notes.filter((note) => note.filter === this.filterNotes);
-      // .filter(note => this.filter === 'pinned' ? note.pinned : note.deleted);
+
     },
   },
 };
