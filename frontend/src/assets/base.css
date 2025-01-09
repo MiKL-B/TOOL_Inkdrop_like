@@ -15,6 +15,7 @@
   --brain: #fc76a3;
   --cyan: #56b6c2;
 }
+
 body {
   height: 100vh;
   overflow: hidden;
@@ -158,9 +159,9 @@ button.danger {
   cursor: pointer;
 }
 .tag {
-  background: var(--background);
-  color: #f2f2f2;
-  border-radius: 20%;
+
+  color: var(--background);
+  border-radius: 10px;
   padding: 0.2rem 0.3rem;
   font-size: 0.8rem;
 }

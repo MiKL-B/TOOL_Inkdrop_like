@@ -130,11 +130,11 @@
                 @click="filterNotes = tag.name"
               >
                 <div class="flex gap-4">
-                  <Tag width="16" height="16" />
+                  <Tag width="16" height="16" :color="`var(--${tag.color})`" />
                   <input id="input-tag" type="text" v-model="tag.name" />
                 </div>
                 <span class="menu-item-count">{{
-                  filteredNotesCountTag(tag.name)
+                  filteredNotesCount(tag.name)
                 }}</span>
               </li>
             </ul>
@@ -185,8 +185,13 @@
           :key="note.id"
         >
           <h2 class="note-title">{{ note.name }}</h2>
-          <span class="tag" v-if="note.tag !== ''">{{ note.tag }}</span>
-          <span>{{ note.filter }}</span>
+          <span
+            class="tag"
+            :style="`background:var(--${note.tag.color})`"
+            v-if="note.tag !== ''"
+            >{{ note.tag.name }}</span
+          >
+          <p>{{ note.status }}</p>
           <p class="note-description">
             {{ note.description }}
           </p>
@@ -222,7 +227,7 @@
           <option value="">Website</option>
           <option value="">Trash</option>
         </select> -->
-        <select name="" id="" v-model="selectedNote.filter">
+        <select v-model="selectedNote.status">
           <option value="All notes">No status</option>
           <option value="Draft">Draft</option>
           <option value="Active">Active</option>
@@ -234,8 +239,13 @@
         }}</span>
 
         <input id="textedit-addtags" type="text" placeholder="Add Tags" /> -->
-        <select name="" id="" v-model="selectedNote.tag">
-          <option v-for="tag in tags" :key="tag.id" :value="tag.name">
+        <select v-model="selectedTag" @change="updateSelectedNoteTag">
+          <option
+            v-for="tag in tags"
+            :key="tag.id"
+            :value="tag.name"
+            :style="`color:var(--${tag.color})`"
+          >
             {{ tag.name }}
           </option>
         </select>
@@ -286,11 +296,18 @@ export default {
       isPreviewMode: false,
       filterNotes: "All notes",
       notes: [],
-      selectedNote: {},
-      status: "",
+      selectedNote: {
+        tag: {
+          id: "",
+          name: "",
+          color: "",
+        },
+      },
       noteIsSelected: false,
       tags: [],
-      tagName: "",
+      selectedTag: null,
+      colors: ["red", "green", "yellow", "blue", "violet", "brain", "violet"],
+      noteCounters: {},
     };
   },
   methods: {
@@ -304,23 +321,48 @@ export default {
     newNote() {
       let note = {
         name: "New note",
-        tag: "",
+        tag: {},
+        status: "",
         description: "",
-        filter: this.filterNotes,
       };
       this.notes.push(note);
     },
     filteredNotesCount(filter) {
-      return this.notes.filter(note => note.filter === filter).length;
+      return this.notes.filter(
+        (note) => note.status === filter || note.tag.name === filter
+      ).length;
     },
-    filteredNotesCountTag(filter) {
-      return this.notes.filter(note => note.tag === filter).length;
-    },
+
     newTag() {
+      let randomIndex = Math.floor(Math.random() * this.colors.length);
+      let randomColor = this.colors[randomIndex];
+      console.log(randomColor);
       let tag = {
-        name: this.tagName || "New tag",
+        name: this.generateIncrementedNoteName('New note'),
+        color: randomColor,
       };
       this.tags.push(tag);
+    },
+    updateSelectedNoteTag() {
+      const selectedTag = this.tags.find(
+        (tag) => tag.name === this.selectedTag
+      );
+
+      if (this.selectedTag) {
+        this.selectedNote.tag.name = selectedTag.name;
+        this.selectedNote.tag.color = selectedTag.color;
+      }
+    },
+    generateIncrementedNoteName(baseTitle) {
+      // Vérifier si le titre de base existe déjà dans l'objet
+      if (!this.noteCounters[baseTitle]) {
+        this.noteCounters[baseTitle] = 1; // Initialiser le compteur
+      } else {
+        this.noteCounters[baseTitle] += 1; // Incrémenter le compteur
+      }
+
+      // Retourner le nom de note avec le compteur
+      return `${baseTitle} ${this.noteCounters[baseTitle]}`;
     },
   },
   computed: {
@@ -328,8 +370,10 @@ export default {
       if (this.filterNotes === "All notes") {
         return this.notes;
       }
-      return this.notes.filter((note) => note.filter === this.filterNotes);
-
+      return this.notes.filter(
+        (note) =>
+          note.status === this.filterNotes || note.tag.name === this.filterNotes
+      );
     },
   },
 };
