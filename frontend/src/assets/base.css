@@ -17,35 +17,50 @@
 }
 
 body {
-  height: 100vh;
-  overflow: hidden;
+
+  
   font-family: "Helvetica Neue", Arial, sans-serif;
 }
 #columns {
   display: grid;
-  grid-template-columns: 0.2fr 0.4fr 1fr;
+  grid-template-rows: auto auto 1fr;
 }
 #menu {
   background: var(--background);
   color: var(--white);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 100vh;
 }
-.menu-list {
-  overflow-y: auto;
-  height: calc(100vh - 5rem);
+
+@media screen and (min-width:768px)
+{
+  body{
+    height: 100vh;
+    overflow: hidden;
+  }
+  #columns {
+    display: grid;
+    grid-template-columns: 0.2fr 0.4fr 1fr;
+  }
+  #menu {
+    background: var(--background);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+  }
+  .menu-list {
+    overflow-y: auto;
+    height: calc(100vh - 5rem);
+  }
+  #notes {
+    height: calc(100vh - 7rem);
+    overflow-y: auto !important;
+  }
+
 }
-#settings {
-  display: flex;
-  gap: 0.5rem;
-  padding: 1rem;
-}
-#settings-info {
-  display: flex;
-  flex-direction: column;
-}
+
 img {
   width: 32px;
   height: 32px;
@@ -63,7 +78,7 @@ summary {
   padding: 1rem;
 }
 
-li:hover,
+.item:hover,
 summary:hover {
   background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
@@ -93,7 +108,6 @@ summary:hover {
 /* notes */
 #notes-container {
   background: var(--white);
-
 }
 #notes-header {
   padding: 1rem;
@@ -109,6 +123,8 @@ summary:hover {
   white-space: nowrap;
   max-width: 400px;
   text-overflow: ellipsis;
+  font-size: 20px;
+  color:var(--background);
 }
 .note-description {
   max-height: 60px;
@@ -145,10 +161,7 @@ button.danger {
   background: var(--red);
   color: hsl(0, 0%, 95%);
 }
-#notes {
-  height: calc(100vh - 7rem);
-  overflow-y: auto !important;
-}
+
 
 .note {
   padding: 1rem;
@@ -159,19 +172,18 @@ button.danger {
   cursor: pointer;
 }
 .tag {
-
   color: var(--background);
   border-radius: 10px;
   padding: 0.2rem 0.3rem;
   font-size: 0.8rem;
 }
-#input-tag{
+#input-edit{
   border:none;
   background:none;
   color:#F2F2F2;
   max-width: 100px;
 }
-#input-tag:focus{
+#input-edit:focus{
   outline:none;
 }
 h2 {
@@ -184,11 +196,14 @@ p {
 #textedit-container {
   padding: 1rem;
   background: #f7f7f7;
+
 }
 #textedit-header {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 1rem;
+  align-items: center;
 }
 #textedit-filters {
   display: flex;
@@ -210,17 +225,21 @@ p {
 #textedit-notename:focus {
   outline: none;
 }
+
 #textedit-preview {
   padding: 1rem 0;
   background: transparent;
+  overflow-y: auto !important;
+  height: calc(100vh - 3.5rem);
 }
 #textedit {
   border: none;
   padding: 1rem 0;
   resize: none;
   width: 100%;
-  height: calc(100vh - 3.5rem);
+  height: calc(100vh - 5.5rem);
   background: transparent;
+
 }
 #textedit:focus {
   outline: none;
@@ -231,24 +250,6 @@ p {
   justify-content: center;
   flex-direction: column;
   align-items: center;
-}
-
-h1 {
-  font-size: 24px;
-  font-weight: bold;
-}
-code {
-  padding: 2px 4px;
-  line-height: 1.2;
-  border-radius: 3px;
-}
-
-pre {
-  background: var(--white);
-  padding: 10px;
-  border-radius: 5px;
-  overflow: auto;
-  white-space: pre-wrap;
 }
 
 details {
@@ -274,4 +275,11 @@ details[open] summary::after {
 }
 .text-grey{
   color:var(--grey)
+}
+select{
+border:1px solid var(--grey);
+background: #f2f2f2;
+padding: 0.5rem 1rem;
+border-radius: 5px;
+cursor: pointer;
 }
