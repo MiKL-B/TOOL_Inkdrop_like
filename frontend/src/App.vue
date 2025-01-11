@@ -4,7 +4,10 @@
     <div id="menu">
       <aside>
         <ul class="menu-list">
-          <li class="item flex justify-between" @click="filterNotes = 'All notes'">
+          <li
+            class="item flex justify-between"
+            @click="filterNotes = 'All notes'"
+          >
             <div class="flex gap-4">
               <ScrollText width="16" height="16" />
               <span>All notes</span>
@@ -51,7 +54,7 @@
               >
                 <div class="flex gap-4">
                   <SquarePen width="16" height="16" />
-                  <a>Draft</a>
+                  <span>Draft</span>
                 </div>
                 <span class="menu-item-count">{{
                   filteredNotesCount("Draft")
@@ -63,7 +66,7 @@
               >
                 <div class="flex gap-4">
                   <SquarePen width="16" height="16" />
-                  <a>Active</a>
+                  <span>Active</span>
                 </div>
                 <span class="menu-item-count">
                   {{ filteredNotesCount("Active") }}
@@ -75,7 +78,7 @@
               >
                 <div class="flex gap-4">
                   <SquarePen width="16" height="16" />
-                  <a>Completed</a>
+                  <span>Completed</span>
                 </div>
                 <span class="menu-item-count">{{
                   filteredNotesCount("Completed")
@@ -87,7 +90,7 @@
               >
                 <div class="flex gap-4">
                   <SquarePen width="16" height="16" />
-                  <a>Archived</a>
+                  <span>Archived</span>
                 </div>
                 <span class="menu-item-count">{{
                   filteredNotesCount("Archived")
@@ -134,7 +137,6 @@
           </li>
         </ul>
       </aside>
-
     </div>
     <!-- notes -->
     <div id="notes-container">
@@ -145,7 +147,12 @@
           </p>
           <button @click="newNote">New note</button>
         </div>
-        <input id="search-notes" type="text" placeholder="Search notes..." />
+        <input
+          id="search-notes"
+          type="text"
+          placeholder="Search notes..."
+          v-model="searchNoteName"
+        />
       </div>
 
       <div id="notes">
@@ -223,7 +230,10 @@
         </select>
       </div>
 
-      <MarkdownEditor :initialMarkdown="selectedNote.description" :isPreviewVisible="isPreviewMode"/>
+      <MarkdownEditor
+        :initialMarkdown="selectedNote.description"
+        :isPreviewVisible="isPreviewMode"
+      />
     </div>
   </div>
 </template>
@@ -253,7 +263,7 @@ export default {
     SquarePen,
     CircleAlert,
     CirclePlus,
-    MarkdownEditor
+    MarkdownEditor,
   },
   data() {
     return {
@@ -273,10 +283,10 @@ export default {
       selectedTag: null,
       colors: ["red", "green", "yellow", "blue", "violet", "brain", "violet"],
       noteCounters: {},
+      searchNoteName: "",
     };
   },
   methods: {
-
     selectNote(note) {
       this.selectedNote = note;
       this.noteIsSelected = true;
@@ -338,10 +348,13 @@ export default {
   },
   computed: {
     filteredNotes() {
+      if (this.searchNoteName !== "") {
+        return this.notes.filter((note) => note.name.toLowerCase().includes(this.searchNoteName.toLowerCase()));
+
+      }
       if (this.filterNotes === "All notes") {
         return this.notes;
       }
-
       return this.notes.filter(
         (note) =>
           note.status === this.filterNotes ||
