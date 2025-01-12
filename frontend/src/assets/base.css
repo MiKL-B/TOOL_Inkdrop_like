@@ -17,24 +17,35 @@
 }
 
 body {
-
-  
   font-family: "Helvetica Neue", Arial, sans-serif;
 }
 #columns {
   display: grid;
   grid-template-rows: auto auto 1fr;
 }
+.bars {
+  background: var(--background);
+  color: var(--white);
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+}
 #menu {
   background: var(--background);
   color: var(--white);
   display: flex;
   flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width:50%;
+}
+.menu-button {
+  cursor: pointer;
 }
 
-@media screen and (min-width:768px)
-{
-  body{
+@media screen and (min-width: 768px) {
+  body {
     height: 100vh;
     overflow: hidden;
   }
@@ -42,13 +53,18 @@ body {
     display: grid;
     grid-template-columns: 0.2fr 0.4fr 1fr;
   }
+  .bars {
+    display: none;
+  }
   #menu {
+    position:relative;
     background: var(--background);
     color: var(--white);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
+    width:100%;
   }
   .menu-list {
     overflow-y: auto;
@@ -58,7 +74,6 @@ body {
     height: calc(100vh - 7rem);
     overflow-y: auto !important;
   }
-
 }
 
 img {
@@ -96,11 +111,11 @@ summary:hover {
 .pl-8 {
   padding-left: 2rem !important;
 }
-.center{
+.center {
   align-items: center;
 }
-.w-full{
-  width:100%
+.w-full {
+  width: 100%;
 }
 .menu-item-count {
   color: var(--grey);
@@ -118,13 +133,13 @@ summary:hover {
   align-items: center;
   padding-bottom: 0.5rem;
 }
-.note-title{
+.note-title {
   overflow: hidden;
   white-space: nowrap;
   max-width: 400px;
   text-overflow: ellipsis;
   font-size: 20px;
-  color:var(--background);
+  color: var(--background);
 }
 .note-description {
   max-height: 60px;
@@ -162,7 +177,6 @@ button.danger {
   color: hsl(0, 0%, 95%);
 }
 
-
 .note {
   padding: 1rem;
   border-bottom: 1px solid hsl(0, 0%, 86%);
@@ -177,14 +191,14 @@ button.danger {
   padding: 0.2rem 0.3rem;
   font-size: 0.8rem;
 }
-#input-edit{
-  border:none;
-  background:none;
-  color:#F2F2F2;
+#input-edit {
+  border: none;
+  background: none;
+  color: #f2f2f2;
   max-width: 100px;
 }
-#input-edit:focus{
-  outline:none;
+#input-edit:focus {
+  outline: none;
 }
 h2 {
   font-weight: bold;
@@ -196,7 +210,6 @@ p {
 #textedit-container {
   padding: 1rem;
   background: #f7f7f7;
-
 }
 #textedit-header {
   display: flex;
@@ -239,14 +252,13 @@ p {
   width: 100%;
   height: calc(100vh - 5.5rem);
   background: transparent;
-
 }
 #textedit:focus {
   outline: none;
 }
-#textedit-nonote{
+#textedit-nonote {
   background: #f7f7f7;
-  display:flex;
+  display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
@@ -273,13 +285,13 @@ summary::after {
 details[open] summary::after {
   content: "▲";
 }
-.text-grey{
-  color:var(--grey)
+.text-grey {
+  color: var(--grey);
 }
-select{
-border:1px solid var(--grey);
-background: #f2f2f2;
-padding: 0.5rem 1rem;
-border-radius: 5px;
-cursor: pointer;
+select {
+  border: 1px solid var(--grey);
+  background: #f2f2f2;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
 }

@@ -1,7 +1,10 @@
 <template>
   <div id="columns">
     <!-- menu -->
-    <div id="menu">
+    <div class="bars">
+      <Menu class="menu-button" @click="menuOpen = !menuOpen" />
+    </div>
+    <div id="menu" v-if="menuOpen || windowWidth >= 768">
       <aside>
         <ul class="menu-list">
           <li
@@ -249,6 +252,7 @@ import {
   SquarePen,
   CircleAlert,
   CirclePlus,
+  Menu,
 } from "lucide-vue-next";
 import MarkdownEditor from "./components/MarkdownEditor.vue";
 export default {
@@ -264,6 +268,7 @@ export default {
     CircleAlert,
     CirclePlus,
     MarkdownEditor,
+    Menu,
   },
   data() {
     return {
@@ -284,9 +289,17 @@ export default {
       colors: ["red", "green", "yellow", "blue", "violet", "brain", "violet"],
       noteCounters: {},
       searchNoteName: "",
+      menuOpen: false,
+      windowWidth: window.innerWidth,
     };
   },
+  mounted() {
+    window.addEventListener("resize", this.updateWindowWidth);
+  },
   methods: {
+    updateWindowWidth() {
+      this.windowWidth = window.innerWidth;
+    },
     selectNote(note) {
       this.selectedNote = note;
       this.noteIsSelected = true;
@@ -349,8 +362,9 @@ export default {
   computed: {
     filteredNotes() {
       if (this.searchNoteName !== "") {
-        return this.notes.filter((note) => note.name.toLowerCase().includes(this.searchNoteName.toLowerCase()));
-
+        return this.notes.filter((note) =>
+          note.name.toLowerCase().includes(this.searchNoteName.toLowerCase())
+        );
       }
       if (this.filterNotes === "All notes") {
         return this.notes;
