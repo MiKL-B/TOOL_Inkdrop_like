@@ -162,6 +162,7 @@
         <div
           @click="selectNote(note)"
           class="note"
+        :class="note.id === selectedNoteId ? 'note-active' : ''"
           v-for="note in filteredNotes"
           :key="note.id"
         >
@@ -277,12 +278,12 @@ export default {
       notes: [],
       selectedNote: {
         tag: {
-          id: "",
           name: "",
           color: "",
         },
       },
       noteIsSelected: false,
+      selectedNoteId: null,
       tags: [],
       notebooks: [],
       selectedTag: null,
@@ -301,16 +302,27 @@ export default {
       this.windowWidth = window.innerWidth;
     },
     selectNote(note) {
+      if (this.selectedNoteId !== null) {
+        const oldNote = this.notes.find((n) => n.id === this.selectedNoteId);
+        if (oldNote) {
+          oldNote.selected = false;
+        }
+      }
+
+      note.selected = true;
+      this.selectedNoteId = note.id;
       this.selectedNote = note;
       this.noteIsSelected = true;
     },
     newNote() {
       let note = {
+        id:this.generateUUID(),
         name: "New note",
         tag: {},
         status: "Draft",
         description: "",
         filter: "All notes",
+        selected: false,
       };
       this.notes.push(note);
     },
@@ -358,6 +370,13 @@ export default {
       }
       return `${baseTitle} ${this.noteCounters[baseTitle]}`;
     },
+    generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const random = Math.random() * 16 | 0; // Générez un nombre aléatoire entre 0 et 15
+    const value = c === 'x' ? random : (random & 0x3 | 0x8); // Pour 'y', assurez-vous qu'il suit la spécification du UUID v4
+    return value.toString(16); // Convertissez le nombre en base 16 (hexadécimal)
+  });
+}
   },
   computed: {
     filteredNotes() {

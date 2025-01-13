@@ -43,7 +43,13 @@ body {
 .menu-button {
   cursor: pointer;
 }
-
+.note-active{
+  background:rgba(0, 0, 0, 0.1);
+}
+#notes{
+  height:200px;
+  overflow-y: auto !important;
+}
 @media screen and (min-width: 768px) {
   body {
     height: 100vh;
@@ -72,7 +78,6 @@ body {
   }
   #notes {
     height: calc(100vh - 7rem);
-    overflow-y: auto !important;
   }
 }
 
@@ -95,7 +100,7 @@ summary {
 
 .item:hover,
 summary:hover {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.2);
   cursor: pointer;
 }
 
@@ -178,11 +183,11 @@ button.danger {
 }
 
 .note {
-  padding: 1rem;
+  padding: 0.5rem;
   border-bottom: 1px solid hsl(0, 0%, 86%);
 }
 .note:hover {
-  background: hsl(0, 0%, 76%);
+  background:rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
 .tag {
